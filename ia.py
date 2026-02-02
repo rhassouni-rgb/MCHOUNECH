@@ -405,7 +405,7 @@ if mode == "💬 المحادثة الذكية":
         btn_icon = "🧠"
         sys_suffix = " وضع التفكير العميق. حلل كل الجوانب."
 
-    # CSS للأزرار وقائمة المود - تصميم فاخر (مصحح)
+    # CSS للأزرار وقائمة المود - تصميم فاخر (مصحح للهاتف ✅)
     st.markdown(f"""
     <style>
         div[data-testid="stPopover"] {{
@@ -464,10 +464,11 @@ if mode == "💬 المحادثة الذكية":
             border: 1px solid {theme_color}60 !important;
         }}
         
-        /* 📱 تحسينات للهاتف */
+        /* 📱 تحسينات للهاتف (تم الإصلاح هنا) */
         @media only screen and (max-width: 600px) {{
              div[data-testid="stPopover"] {{
-                bottom: 80px !important; right: 20px !important;
+                bottom: 160px !important; /* ✅ تم الرفع للأعلى */
+                right: 20px !important;
                 width: 45px !important; height: 45px !important; font-size: 1.2rem !important;
             }}
         }}
