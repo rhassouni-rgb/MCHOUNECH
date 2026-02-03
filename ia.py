@@ -37,6 +37,8 @@ if "ai_mode" not in st.session_state: st.session_state.ai_mode = "🚀 Rapide"
 if "pdf_context" not in st.session_state: st.session_state.pdf_context = ""
 if "db_context" not in st.session_state: st.session_state.db_context = ""
 if "generated_code" not in st.session_state: st.session_state.generated_code = ""
+# متغير الثيم
+if "theme_mode" not in st.session_state: st.session_state.theme_mode = "🌑 ليلي"
 
 # ========================================================
 # 🛠️ دوال استخراج البيانات (PDF + Database)
@@ -61,55 +63,194 @@ def extract_text_from_pdf(pdf_file):
         return None
 
 # ========================================================
-# 🎨 (CSS) التصميم والواجهة - التحديث الخرافي (Apple-like)
+# 🎨 (CSS) التصميم والواجهة - التحديث الجديد (Gemini Glass Style)
 # ========================================================
-st.markdown("""
+
+# تحديد الألوان بناءً على الوضع المختار
+if st.session_state.theme_mode == "🌑 ليلي":
+    # --- الألوان الليلية ---
+    main_bg = "radial-gradient(ellipse at top, #0f172a 0%, #000000 100%), radial-gradient(circle at 80% 20%, rgba(0, 242, 96, 0.1) 0%, transparent 50%), radial-gradient(circle at 20% 80%, rgba(30, 60, 114, 0.2) 0%, transparent 50%)"
+    text_color = "#ffffff"
+    input_text_color = "#ffffff"
+    input_bg = "rgba(255, 255, 255, 0.05)"
+    sidebar_bg = "rgba(10, 10, 15, 0.6)"
+    card_bg = "rgba(255, 255, 255, 0.03)"
+    border_color = "rgba(255, 255, 255, 0.08)"
+    shadow_color = "rgba(0,0,0,0.2)"
+    radio_bg = "rgba(255, 255, 255, 0.1)" # خلفية زر الثيم
+    
+    # 🔥 ألوان الشريط السفلي (ليلي - زجاجي داكن)
+    chat_bar_bg = "rgba(20, 20, 25, 0.6)" # زيادة الشفافية
+    chat_bar_border = "rgba(255, 255, 255, 0.15)"
+    
+else:
+    # --- الألوان النهارية ---
+    main_bg = "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)"
+    text_color = "#1e293b" 
+    input_text_color = "#000000"
+    input_bg = "rgba(255, 255, 255, 0.8)"
+    sidebar_bg = "rgba(255, 255, 255, 0.7)"
+    card_bg = "rgba(255, 255, 255, 0.6)"
+    border_color = "rgba(0, 0, 0, 0.1)"
+    shadow_color = "rgba(0,0,0,0.05)"
+    radio_bg = "rgba(0, 0, 0, 0.05)" # خلفية زر الثيم
+    
+    # 🔥 ألوان الشريط السفلي (نهاري - زجاجي فاتح)
+    chat_bar_bg = "rgba(255, 255, 255, 0.5)" # زيادة الشفافية
+    chat_bar_border = "rgba(0, 0, 0, 0.1)"
+
+st.markdown(f"""
 <style>
     /* استيراد الخطوط */
     @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap');
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
     
     /* إعدادات عامة */
-    * { font-family: 'Tajawal', sans-serif; box-sizing: border-box; }
+    * {{ font-family: 'Tajawal', sans-serif; box-sizing: border-box; }}
     
-    /* الخلفية الرئيسية - عمق كوني */
-    .stApp {
-        background: radial-gradient(ellipse at top, #0f172a 0%, #000000 100%),
-                    radial-gradient(circle at 80% 20%, rgba(0, 242, 96, 0.1) 0%, transparent 50%),
-                    radial-gradient(circle at 20% 80%, rgba(30, 60, 114, 0.2) 0%, transparent 50%);
-        color: #ffffff;
-        font-weight: 400;
-    }
+    /* الخلفية الرئيسية */
+    .stApp {{
+        background: {main_bg};
+        background-attachment: fixed;
+        color: {text_color};
+    }}
 
-    /* تحسين القائمة الجانبية - تأثير الزجاج */
-    section[data-testid="stSidebar"] {
-        background-color: rgba(10, 10, 15, 0.6) !important;
-        border-right: 1px solid rgba(255, 255, 255, 0.08);
+    /* 🔥🔥🔥 الشريط العلوي (Header) 🔥🔥🔥 */
+    header[data-testid="stHeader"] {{
+        background-color: transparent !important;
+        backdrop-filter: blur(5px);
+    }}
+    header[data-testid="stHeader"] button, header[data-testid="stHeader"] svg {{
+        color: {text_color} !important; 
+    }}
+    
+    /* 🔥🔥🔥 الشريط السفلي (Footer & Bottom Container) - الحل الجذري 🔥🔥🔥 */
+    footer {{
+        visibility: hidden;
+        height: 0px;
+    }}
+    
+    /* جعل الحاوية الكبيرة السفلية شفافة تماماً لإظهار خلفية الموقع */
+    div[data-testid="stBottom"] {{
+        background-color: transparent !important;
+        background: none !important;
+        border: none !important;
+        box-shadow: none !important;
+        backdrop-filter: none !important;
+    }}
+    
+    div[data-testid="stBottom"] > div {{
+        background-color: transparent !important;
+    }}
+
+    /* 🔥🔥🔥 تصميم خانة الكتابة السفلية (Gemini Glass Style) 🔥🔥🔥 */
+    /* التعديل: شكل مستطيل بحواف ناعمة بدلاً من الشكل الدائري */
+    div[data-testid="stChatInput"] {{
+        background-color: {chat_bar_bg} !important; 
+        backdrop-filter: blur(20px) saturate(180%) !important; /* تأثير زجاجي قوي */
+        -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+        border-radius: 12px !important; /* 🔥 تحويله إلى مستطيل بحواف ناعمة (Gemini Style) */
+        border: 1px solid {chat_bar_border} !important;
+        padding: 10px 15px !important; /* مساحة داخلية مريحة */
+        box-shadow: 0 8px 32px rgba(0,0,0,0.2) !important;
+        margin-bottom: 30px !important; /* يطفو أعلى من الحافة السفلية */
+        transition: all 0.3s ease;
+    }}
+    
+    div[data-testid="stChatInput"]:hover {{
+        box-shadow: 0 12px 40px rgba(0,0,0,0.3) !important;
+        border-color: rgba(0, 242, 96, 0.3) !important;
+    }}
+    
+    /* 🔥🔥🔥 تصميم زر الثيم (Apple Segmented Control) 🔥🔥🔥 */
+    /* إخفاء الدوائر التقليدية */
+    div[role="radiogroup"] label > div:first-child {{
+        display: none !important;
+    }}
+    
+    /* حاوية الزر */
+    div[role="radiogroup"] {{
+        background-color: {radio_bg};
+        padding: 4px;
+        border-radius: 12px;
+        border: 1px solid {border_color};
+        display: flex;
+        gap: 5px;
+    }}
+    
+    /* الأزرار الداخلية */
+    div[role="radiogroup"] label {{
+        flex: 1;
+        background-color: transparent;
+        border-radius: 8px;
+        text-align: center;
+        padding: 8px 10px !important;
+        margin: 0 !important;
+        border: 1px solid transparent;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        justify-content: center;
+    }}
+    
+    /* تأثير التحويم */
+    div[role="radiogroup"] label:hover {{
+        background-color: rgba(128, 128, 128, 0.1);
+    }}
+    
+    /* ------------------------------------------------ */
+    
+    /* إصلاح منطقة المحتوى الرئيسي */
+    .block-container {{
+        padding-top: 3rem;
+        padding-bottom: 9rem; /* مسافة كافية للأسفل لعدم تغطية المحتوى */
+    }}
+
+    /* تصحيح ألوان النصوص في الحقول */
+    .stTextInput input, .stTextArea textarea, .stSelectbox div, .stNumberInput input, input, textarea {{
+        color: {input_text_color} !important;
+        -webkit-text-fill-color: {input_text_color} !important;
+        caret-color: #00f260 !important;
+        background-color: {input_bg} !important;
+    }}
+    
+    /* لون النصوص العامة */
+    p, h1, h2, h3, h4, h5, h6, li, span, div {{
+        color: {text_color};
+    }}
+
+    /* تحسين القائمة الجانبية */
+    section[data-testid="stSidebar"] {{
+        background-color: {sidebar_bg} !important;
+        border-right: 1px solid {border_color};
         backdrop-filter: blur(25px) saturate(180%);
         -webkit-backdrop-filter: blur(25px) saturate(180%);
-        box-shadow: 5px 0 30px rgba(0,0,0,0.2);
-    }
+        box-shadow: 5px 0 30px {shadow_color};
+    }}
+    
+    section[data-testid="stSidebar"] p, section[data-testid="stSidebar"] span {{
+        color: {text_color} !important;
+    }}
 
     /* تحسين منطقة رفع الملفات */
-    [data-testid="stFileUploader"] {
-        background-color: rgba(255, 255, 255, 0.03);
+    [data-testid="stFileUploader"] {{
+        background-color: {card_bg};
         padding: 20px;
         border-radius: 16px;
         border: 2px dashed rgba(0, 242, 96, 0.4);
         transition: all 0.3s ease;
         text-align: center;
-    }
-    [data-testid="stFileUploader"]:hover {
+    }}
+    [data-testid="stFileUploader"]:hover {{
         border-color: #00f260;
         background-color: rgba(0, 242, 96, 0.05);
         box-shadow: 0 0 20px rgba(0, 242, 96, 0.1);
-    }
+    }}
     
-    /* تحسين الأزرار - توهج ناعم */
-    .stButton > button {
+    /* تحسين الأزرار العامة (غير زر الثيم) */
+    .stButton > button {{
         background: linear-gradient(135deg, rgba(30, 60, 114, 0.8), rgba(42, 82, 152, 0.8));
         border: none;
-        color: white;
+        color: white !important;
         border-radius: 12px;
         padding: 12px 24px;
         font-weight: 600;
@@ -117,17 +258,16 @@ st.markdown("""
         transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255,255,255,0.1);
         backdrop-filter: blur(10px);
-    }
-    .stButton > button:hover {
+    }}
+    .stButton > button:hover {{
         transform: translateY(-3px) scale(1.02);
         box-shadow: 0 10px 25px rgba(42, 82, 152, 0.4), 0 0 15px rgba(0, 242, 96, 0.3);
         background: linear-gradient(135deg, rgba(30, 60, 114, 1), rgba(42, 82, 152, 1));
-    }
+    }}
+    .stButton > button p {{ color: white !important; }}
 
-    /* =================================================================
-       🔥 تصميم الـ HERO SECTION الفاخر 🔥
-    ================================================================= */
-    .hero-wrapper {
+    /* Hero Section */
+    .hero-wrapper {{
         position: relative;
         width: 100%;
         height: 420px; 
@@ -135,15 +275,15 @@ st.markdown("""
         overflow: hidden;
         margin-bottom: 40px;
         box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-        border: 1px solid rgba(255, 255, 255, 0.05);
+        border: 1px solid {border_color};
         display: flex;
         align-items: center;
         justify-content: center;
         text-align: left;
         isolation: isolate;
-    }
+    }}
 
-    .hero-bg {
+    .hero-bg {{
         position: absolute;
         top: 0; left: 0;
         width: 100%; height: 100%;
@@ -152,55 +292,53 @@ st.markdown("""
         z-index: 1;
         transition: transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
         filter: saturate(0.9) brightness(0.8);
-    }
+    }}
     
-    .hero-wrapper:hover .hero-bg {
+    .hero-wrapper:hover .hero-bg {{
         transform: scale(1.08);
         filter: saturate(1.1) brightness(0.9);
-    }
+    }}
 
-    .hero-content {
+    .hero-content {{
         position: relative;
         z-index: 2;
         padding: 50px;
         width: 100%;
-        /* تدرج لوني سينمائي فاخر */
         background: linear-gradient(to right, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 50%, rgba(0,0,0,0.2) 100%);
         height: 100%;
         display: flex;
         flex-direction: column;
         justify-content: center;
         backdrop-filter: blur(2px);
-    }
+    }}
 
-    .hero-welcome {
+    .hero-welcome {{
         font-family: 'Orbitron', sans-serif;
         font-size: 1.1rem;
-        color: #00f260;
+        color: #00f260 !important;
         letter-spacing: 4px;
         text-transform: uppercase;
         margin-bottom: 10px;
         text-shadow: 0 0 10px rgba(0, 242, 96, 0.6);
         font-weight: 700;
-    }
+    }}
 
-    .hero-title {
+    .hero-title {{
         font-family: 'Orbitron', sans-serif;
         font-size: 4rem;
         font-weight: 900;
-        color: #ffffff;
+        color: #ffffff !important;
         margin: 0;
         line-height: 1.05;
-        /* نص متدرج معدني فاخر */
         background: linear-gradient(to right bottom, #ffffff 20%, #b0b0b0 50%, #e0e0e0 80%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         filter: drop-shadow(0 10px 25px rgba(0,0,0,0.5));
-    }
+    }}
 
-    .hero-subtitle {
+    .hero-subtitle {{
         font-family: 'Tajawal', sans-serif;
-        color: #e0e0e0;
+        color: #e0e0e0 !important;
         font-size: 1.25rem;
         margin-top: 25px;
         border-left: 4px solid #00f260;
@@ -210,76 +348,125 @@ st.markdown("""
         background: linear-gradient(90deg, rgba(0, 242, 96, 0.08) 0%, transparent 100%);
         border-radius: 0 12px 12px 0;
         padding-top: 10px; padding-bottom: 10px;
-    }
+    }}
     
-    /* تحسين النصوص العادية */
-    b { color: #fff; font-weight: 700; }
+    .hero-subtitle b {{ color: #fff !important; }}
 
-    /* ================================================================= */
-
-    /* بطاقات المعلومات - Glassmorphism */
-    .metric-card {
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.08);
+    /* Cards */
+    .metric-card {{
+        background: {card_bg};
+        border: 1px solid {border_color};
         padding: 25px;
         border-radius: 20px;
         text-align: center;
         transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         backdrop-filter: blur(15px);
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
-    }
-    .metric-card:hover { 
+        box-shadow: 0 8px 32px 0 {shadow_color};
+    }}
+    .metric-card:hover {{ 
         transform: translateY(-5px); 
         border-color: rgba(0, 242, 96, 0.4);
         box-shadow: 0 15px 40px 0 rgba(0, 242, 96, 0.15);
-    }
-    .metric-card h3 { color: #00f260; margin-bottom: 10px; letter-spacing: 1px; }
-    .metric-card p { color: #aaa; font-size: 1.1rem; }
+    }}
+    .metric-card h3 {{ color: #00f260 !important; margin-bottom: 10px; letter-spacing: 1px; }}
+    .metric-card p {{ color: {text_color} !important; font-size: 1.1rem; opacity: 0.8; }}
 
-    /* تحسين جداول البيانات */
-    [data-testid="stDataFrame"] {
-        border: 1px solid rgba(255, 255, 255, 0.08);
+    [data-testid="stDataFrame"] {{
+        border: 1px solid {border_color};
         border-radius: 16px;
         overflow: hidden;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    }
+        box-shadow: 0 10px 30px {shadow_color};
+    }}
     
-    /* تحسين رسائل التنبيه */
-    .stAlert {
-        background-color: rgba(0, 0, 0, 0.3) !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    .stAlert {{
+        background-color: {card_bg} !important;
+        border: 1px solid {border_color} !important;
         border-radius: 16px !important;
         backdrop-filter: blur(10px);
-    }
+    }}
+    .stAlert div {{ color: {text_color} !important; }}
     
-    /* تحسين حقول الإدخال (Selectbox, Textarea) */
-    .stSelectbox > div > div, .stTextArea > div > div {
-        background-color: rgba(255, 255, 255, 0.05) !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    .stSelectbox > div > div, .stTextArea > div > div {{
+        background-color: {input_bg} !important;
+        border: 1px solid {border_color} !important;
         border-radius: 12px !important;
-        color: #fff !important;
-    }
-    .stSelectbox > div > div:hover, .stTextArea > div > div:hover {
+        color: {input_text_color} !important;
+    }}
+    .stSelectbox > div > div:hover, .stTextArea > div > div:hover {{
         border-color: rgba(0, 242, 96, 0.5) !important;
-    }
+    }}
     
-    /* تحسين منطقة الكود */
-    .stCode {
+    .stCode {{
         border-radius: 16px !important;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.3) !important;
-        border: 1px solid rgba(255,255,255,0.05) !important;
-    }
+        box-shadow: 0 10px 30px {shadow_color} !important;
+        border: 1px solid {border_color} !important;
+    }}
     
     /* 📱 تحسينات للهاتف */
-    @media only screen and (max-width: 600px) {
-        .hero-title { font-size: 2.5rem !important; }
-        .hero-wrapper { height: 300px !important; }
-        .hero-content { padding: 25px !important; }
-        .hero-subtitle { font-size: 1rem !important; }
+    @media only screen and (max-width: 600px) {{
+        .hero-title {{ font-size: 2.5rem !important; }}
+        .hero-wrapper {{ height: 300px !important; }}
+        .hero-content {{ padding: 25px !important; }}
+        .hero-subtitle {{ font-size: 1rem !important; }}
+        div[role="radiogroup"] {{ width: 100% !important; }}
+    }}
+</style>
+""", unsafe_allow_html=True)
+st.markdown("""
+<style>
+    /* ========================================== */
+    /* 🔥 تفكيك اللون الأبيض (Nuclear Fix) 🔥 */
+    /* ========================================== */
+
+    /* 1. تلوين الإطار الخارجي الأساسي (الحاوية الأم) */
+    div[data-testid="stChatInput"] {
+        background-color: #1A1A1A !important; /* لون داكن جداً */
+        background: linear-gradient(135deg, #1A1A1A 0%, #2D2D2D 100%) !important;
+        border-radius: 20px !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.5) !important;
+        color: white !important;
+    }
+
+    /* 2. الهجوم الشامل: جعل كل الطبقات الداخلية شفافة */
+    /* هذا السطر هو السر: يستهدف أي عنصر داخل الشات ويجبره أن يكون شفافاً */
+    div[data-testid="stChatInput"] * {
+        background-color: transparent !important;
+        background: transparent !important;
+    }
+
+    /* 3. إعادة تنسيق حقل الكتابة ليظهر النص بالأبيض */
+    textarea[data-testid="stChatInputTextArea"] {
+        color: #FFFFFF !important; /* نص أبيض ناصع */
+        caret-color: #00F260 !important; /* مؤشر أخضر */
+        -webkit-text-fill-color: #FFFFFF !important;
+    }
+
+    /* 4. تلوين النص "شبه المختفي" (Placeholder) */
+    textarea[data-testid="stChatInputTextArea"]::placeholder {
+        color: rgba(255, 255, 255, 0.7) !important;
+        -webkit-text-fill-color: rgba(255, 255, 255, 0.7) !important;
+    }
+
+    /* 5. إصلاح زر الإرسال (لأنه أصبح شفافاً بسبب الخطوة 2) */
+    button[data-testid="stChatInputSubmitButton"] {
+        background: transparent !important;
+        border: none !important;
+    }
+    
+    /* تلوين أيقونة الزر */
+    button[data-testid="stChatInputSubmitButton"] svg {
+        fill: #00F260 !important; /* لون أخضر للأيقونة */
+        color: #00F260 !important;
+    }
+
+    /* تأثير التحويم على الزر */
+    button[data-testid="stChatInputSubmitButton"]:hover svg {
+        fill: #FFFFFF !important;
+        transform: scale(1.1);
     }
 </style>
 """, unsafe_allow_html=True)
-
 # ========================================================
 # 📱 القائمة الجانبية
 # ========================================================
@@ -314,8 +501,25 @@ with st.sidebar:
     <div class="logo-container"><img src="{logo_url_sidebar}" class="logo-img-side"></div>
     """, unsafe_allow_html=True)
 
-    st.markdown("<h2 style='text-align: center; color: white; font-family: Orbitron; letter-spacing: 2px; text-shadow: 0 0 15px rgba(0,242,96,0.4);'>M'CHOUNECHE AI</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='text-align: center; color: #00f260; font-family: Orbitron; letter-spacing: 2px; text-shadow: 0 0 15px rgba(0,242,96,0.4);'>M'CHOUNECHE AI</h2>", unsafe_allow_html=True)
     st.caption("Dev: Hassouni Raed | ESTA Student")
+    st.markdown("---")
+    
+    # 🔥🔥🔥 مفتاح تغيير المظهر (تصميم Apple الجديد) 🔥🔥🔥
+    st.markdown("### 🌗 المظهر (Theme)")
+    # تم إضافة horizontal=True لجعله أفقياً
+    theme_selection = st.radio(
+        "اختر الوضع:",
+        ["🌑 ليلي", "☀️ نهاري"],
+        index=0 if st.session_state.theme_mode == "🌑 ليلي" else 1,
+        key="theme_toggle_radio",
+        horizontal=True,
+        label_visibility="collapsed" # إخفاء العنوان الصغير لأنه مكتوب فوق
+    )
+    if theme_selection != st.session_state.theme_mode:
+        st.session_state.theme_mode = theme_selection
+        st.rerun()
+
     st.markdown("---")
     
     mode = st.radio("القائمة:", 
@@ -325,7 +529,6 @@ with st.sidebar:
     
     st.markdown("---")
 
-    # 🔥 قسم حالة قاعدة البيانات 🔥
     if st.session_state.db_context:
         st.success("✅ قاعدة البيانات (data.txt): متصلة")
     else:
@@ -333,7 +536,6 @@ with st.sidebar:
     
     st.markdown("---")
     
-    # 🔥 قسم رفع ملفات الدروس 🔥
     st.markdown("### 📚 ملفات الدروس (PDF)")
     uploaded_pdf = st.file_uploader("ارفع الدرس هنا", type="pdf", key="pdf_uploader")
     
@@ -363,7 +565,6 @@ with st.sidebar:
 # ========================================================
 if mode == "💬 المحادثة الذكية":
     
-    # الرابط الخاص بك للبانر
     banner_image_url = "https://scontent.falg4-1.fna.fbcdn.net/v/t39.30808-6/617462444_1290177182886204_3419228806314042802_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=aa7b47&_nc_eui2=AeF1b-6-EYFKDLejb4gp-eLNU3S7x9Fco_pTdLvH0Vyj-qCMW4F3fao-z_uerYF2ZhRgEDxq2nvI6A2T7UxjoeUO&_nc_ohc=1G23haZEeY8Q7kNvwGzSFyV&_nc_oc=AdmTadT3fR9Yr0AuYaWg5ib8b2aNA_fJzhZ2mvwc0ddxFf6juA9W9sCWb8I0qcDrap8&_nc_zt=23&_nc_ht=scontent.falg4-1.fna&_nc_gid=UXi1zrPr-nc0YzNSVZ6SNQ&oh=00_Afu2yPXWMydy1dCoNmmp86pybMzg1ROT-1XVzMsvv8S7Sg&oe=6985691D"
 
     st.markdown(f"""
@@ -381,31 +582,31 @@ if mode == "💬 المحادثة الذكية":
     </div>
     """, unsafe_allow_html=True)
     
-    # زر تحميل المحادثة
     if st.session_state.chat_history:
         chat_str = "\n".join([f"[{m['role'].upper()}]: {m['content']}" for m in st.session_state.chat_history])
         st.download_button("💾 تحميل سجل المحادثة", chat_str, file_name="chat_history.txt", mime="text/plain")
 
-    # عرض الشات
     for msg in st.session_state.chat_history:
         with st.chat_message(msg["role"]):
             st.write(msg["content"])
 
-    # تحديد الألوان والأيقونة
     if st.session_state.ai_mode == "🚀 Rapide":
-        theme_color = "#ffffff"
+        theme_color = "#ffffff" if st.session_state.theme_mode == "🌑 ليلي" else "#000000"
         btn_icon = "🚀"
         sys_suffix = " أجب بسرعة فائقة واختصار. استخدم النقاط."
     elif st.session_state.ai_mode == "💠 Pro":
         theme_color = "#00f260"
         btn_icon = "💠"
         sys_suffix = " أجب بتفصيل هندسي متوازن ودقيق."
-    else: # Pro Max
+    else:
         theme_color = "#ff2a2a"
         btn_icon = "🧠"
         sys_suffix = " وضع التفكير العميق. حلل كل الجوانب."
 
-    # CSS للأزرار وقائمة المود - تصميم فاخر (مصحح للهاتف ✅)
+    popover_bg = "rgba(20, 20, 30, 0.9)" if st.session_state.theme_mode == "🌑 ليلي" else "rgba(255, 255, 255, 0.9)"
+    chat_input_bg = "rgba(255,255,255,0.05)" if st.session_state.theme_mode == "🌑 ليلي" else "rgba(0,0,0,0.05)"
+    message_bg = "rgba(255,255,255,0.03)" if st.session_state.theme_mode == "🌑 ليلي" else "rgba(255,255,255,0.6)"
+
     st.markdown(f"""
     <style>
         div[data-testid="stPopover"] {{
@@ -413,7 +614,7 @@ if mode == "💬 المحادثة الذكية":
             z-index: 1000000 !important; display: block !important; width: auto !important;
         }}
         div[data-testid="stPopover"] button {{
-            background-color: rgba(20, 20, 30, 0.9) !important;
+            background-color: {popover_bg} !important;
             border: 2px solid {theme_color} !important; color: {theme_color} !important;
             border-radius: 50% !important; width: 55px !important; height: 55px !important;
             box-shadow: 0 0 25px {theme_color}60 !important;
@@ -426,21 +627,18 @@ if mode == "💬 المحادثة الذكية":
             box-shadow: 0 0 40px {theme_color} !important;
         }}
         
-        div[data-testid="stChatInput"] {{
-            border: 1px solid rgba(255,255,255,0.1) !important;
-            border-radius: 30px !important;
-            background-color: rgba(255,255,255,0.05) !important;
-            backdrop-filter: blur(20px) !important;
-            box-shadow: 0 -10px 30px rgba(0,0,0,0.3) !important;
-            padding: 5px !important;
-        }}
+        /* تعديلات داخل خانة الدردشة */
         textarea[data-testid="stChatInputTextArea"] {{ 
-            padding-right: 60px !important; caret-color: {theme_color} !important; color: #fff !important;
+            padding-right: 60px !important; 
+            caret-color: {theme_color} !important; 
+            color: {input_text_color} !important;
+            -webkit-text-fill-color: {input_text_color} !important;
             background: transparent !important;
         }}
+        
         button[data-testid="stChatInputSubmitButton"] {{ 
             color: {theme_color} !important; 
-            background: rgba(255,255,255,0.05) !important;
+            background: {chat_input_bg} !important;
             border-radius: 50% !important; height: 45px !important; width: 45px !important;
             border: 1px solid {theme_color}40 !important;
         }}
@@ -450,24 +648,23 @@ if mode == "💬 المحادثة الذكية":
         }}
         
         .stChatMessage {{
-            background: rgba(255,255,255,0.03) !important;
-            border: 1px solid rgba(255,255,255,0.05) !important;
+            background: {message_bg} !important;
+            border: 1px solid {border_color} !important;
             border-radius: 16px !important;
             backdrop-filter: blur(10px) !important;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05) !important;
             transition: transform 0.2s;
         }}
         .stChatMessage:hover {{ transform: translateY(-2px); }}
         
         div[data-testid="chatAvatarIcon"] {{
-            background: rgba(255,255,255,0.1) !important;
+            background: rgba(128,128,128,0.1) !important;
             border: 1px solid {theme_color}60 !important;
         }}
         
-        /* 📱 تحسينات للهاتف (تم الإصلاح هنا) */
         @media only screen and (max-width: 600px) {{
              div[data-testid="stPopover"] {{
-                bottom: 160px !important; /* ✅ تم الرفع للأعلى */
+                bottom: 160px !important;
                 right: 20px !important;
                 width: 45px !important; height: 45px !important; font-size: 1.2rem !important;
             }}
@@ -479,33 +676,25 @@ if mode == "💬 المحادثة الذكية":
         st.markdown(f"### Current Mode: {st.session_state.ai_mode}")
         st.session_state.ai_mode = st.radio("Select Level:", ["🚀 Rapide", "💠 Pro", "🧠 Pro Max"], index=["🚀 Rapide", "💠 Pro", "🧠 Pro Max"].index(st.session_state.ai_mode))
 
-    # --------------------------------------------------------
-    # إعداد الـ Prompt (تم تحديث الهوية هنا)
-    # --------------------------------------------------------
-    # تم تحديث المعلومات الخاصة بالمبرمج حسوني رائد ومكان إقامته
     programmer_info = " ملاحظة هامة جداً: إذا سألك المستخدم 'من برمجك؟' أو 'من رئيسك؟' أو 'من صنعك؟' يجب أن تجيب حرفياً بهذه الجملة فقط: 'رئيسي هو حسوني رائد، طالب بالمدرسة العليا لتكنولوجيات متقدمة، ومقيم في ميوري ووهران'."
     
-    # تجهيز سياق البيانات
     context_instruction = ""
     if st.session_state.db_context:
         context_instruction += f"\n[PERMANENT DATABASE INFO]:\n{st.session_state.db_context}\n(Use this as primary source for M'chouneche info.)"
     if st.session_state.pdf_context:
         context_instruction += f"\n[CURRENT LESSON CONTEXT (PDF)]: \n{st.session_state.pdf_context[:20000]}\n(Use this for academic questions.)"
     
-    # تحديث البرومبت الأساسي ليكون خبيراً في مشونش
     base_prompt = "أنت مساعد ذكي ومرشد سياحي وتقني لمدينة مشونش، وأيضاً خبير في الأنظمة المدمجة." + programmer_info + context_instruction
     sys_prompt = base_prompt + sys_suffix
 
-    # خانة الكتابة
-    prompt = st.chat_input("اسأل عن مدينة مشونش أو الأنظمة المدمجة...")
+    prompt = st.chat_input("اسأل عن مدينة مشونش ...")
     
     if prompt:
         st.session_state.chat_history.append({"role": "user", "content": prompt})
         with st.chat_message("user"): st.write(prompt)
 
         if st.session_state.ai_mode == "🧠 Pro Max":
-            # تحسين مظهر الـ status
-            st.markdown("""<style>.stStatusWidget { background: rgba(255,255,255,0.05) !important; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; }</style>""", unsafe_allow_html=True)
+            st.markdown(f"""<style>.stStatusWidget {{ background: {card_bg} !important; backdrop-filter: blur(10px); border: 1px solid {border_color}; border-radius: 12px; }}</style>""", unsafe_allow_html=True)
             with st.status("🧠 جارٍ التفكير العميق...", expanded=True) as status:
                 st.write("🔍 تحليل السؤال...")
                 time.sleep(0.5)
@@ -532,7 +721,7 @@ if mode == "💬 المحادثة الذكية":
         st.session_state.chat_history.append({"role": "assistant", "content": full_resp})
 
 # ========================================================
-# بقية الأقسام (Code Studio, Analytics, Settings)
+# بقية الأقسام
 # ========================================================
 elif mode == "💻 استوديو الأكواد":
     st.title("💻 معماري البرمجيات (Code Architect)")
@@ -550,14 +739,13 @@ elif mode == "💻 استوديو الأكواد":
                 prompt_code = f"Write professional {lang} code for: {code_req}. Only code, no explanation."
                 resp = client.chat.completions.create(model=MODEL_ID, messages=[{"role": "user", "content": prompt_code}])
                 generated_code = resp.choices[0].message.content
-                st.session_state.generated_code = generated_code # حفظ الكود
+                st.session_state.generated_code = generated_code
                 st.code(generated_code, language=lang.lower().split()[0])
         elif st.session_state.generated_code:
              st.code(st.session_state.generated_code, language=lang.lower().split()[0])
         else:
             st.info("النتيجة ستظهر هنا...")
         
-        # زر تحميل الكود
         if st.session_state.generated_code:
             ext_map = {"C (Embedded)": "c", "Assembly": "s", "Python": "py", "C++": "cpp", "VHDL": "vhd"}
             file_ext = ext_map.get(lang, "txt")
@@ -580,7 +768,6 @@ elif mode == "📊 تحليل البيانات":
                 res = client.chat.completions.create(model=MODEL_ID, messages=[{"role": "user", "content": f"Analyze: {list(df.columns)}" }])
                 st.write(res.choices[0].message.content)
             
-            # إحصائيات سريعة
             with st.expander("📈 إحصائيات سريعة"):
                 st.write(df.describe())
 
@@ -594,13 +781,12 @@ elif mode == "📊 تحليل البيانات":
 
 elif mode == "⚙️ الإعدادات":
     st.title("⚙️ النظام")
-    # تحديث معلومات الطالب في الإعدادات - تصميم بطاقة فاخر
-    st.markdown("""
+    st.markdown(f"""
     <div class="metric-card" style="text-align: left; display: flex; align-items: center; gap: 20px;">
         <div style="font-size: 3rem;">👨‍💻</div>
         <div>
-            <h3 style="margin: 0; color: #ffffff;">Hassouni Raed</h3>
-            <p style="margin: 5px 0 0 0; color: #00f260;">ESTA Student - ACCESS GRANTED</p>
+            <h3 style="margin: 0; color: #ffffff !important;">Hassouni Raed</h3>
+            <p style="margin: 5px 0 0 0; color: #00f260 !important;">ESTA Student - ACCESS GRANTED</p>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -631,5 +817,5 @@ elif mode == "⚙️ الإعدادات":
             st.session_state.chat_history = []
             st.session_state.pdf_context = ""
             st.session_state.generated_code = ""
-            st.session_state.db_context = load_local_database() # إعادة تحميل قاعدة البيانات
+            st.session_state.db_context = load_local_database()
             st.rerun()
