@@ -6,12 +6,13 @@ import time
 import PyPDF2   # 📚 مكتبة قراءة ملفات الدروس
 import os       # 📂 مكتبة التعامل مع ملفات النظام
 import json     # 💾 للتعامل مع تحميل البيانات
-
+USER_IMG = "https://cdn-icons-png.flaticon.com/512/9374/9374918.png"  # صورة المستخدم
+BOT_IMG  = "https://cdn-icons-png.flaticon.com/512/8943/8943377.png"  # صورة الروبوت
 # ========================================================
 # 🔑 إعدادات النظام
 # ========================================================
-GROQ_API_KEY = "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"
-MODEL_ID = "llama-3.3-70b-versatile"
+GROQ_API_KEY = "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"
+MODEL_ID = "llama-3.1-8b-instant"
 
 st.set_page_config(
     page_title="M'chouneche AI",
@@ -417,7 +418,22 @@ st.markdown("""
     /* ========================================== */
     /* 🔥 تفكيك اللون الأبيض (Nuclear Fix) 🔥 */
     /* ========================================== */
+div[data-testid="stChatMessage"] + div[style*="background-color: rgb(255, 255, 255)"] {
+        display: none !important;
+    }
+            div[data-testid="stChatMessage"] + div {
+    display: none !important;
+}
 
+/* 2. استهداف أي زر تحميل (Download) قد يظهر تحت الرسائل */
+.stDownloadButton {
+    display: none !important;
+}
+
+/* 3. تنظيف أي خلفية بيضاء متبقية في أسفل الصفحة */
+div.block-container {
+    padding-bottom: 5rem !important;
+}
     /* 1. تلوين الإطار الخارجي الأساسي (الحاوية الأم) */
     div[data-testid="stChatInput"] {
         background-color: #1A1A1A !important; /* لون داكن جداً */
